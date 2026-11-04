@@ -5,6 +5,7 @@ import { BaseMonitoringAction } from "./base-monitoring-action";
 import { ServiceTheme } from "../interfaces/theme";
 import { Slot } from "../ui/progress-bar-renderer";
 import { formatTimeUntil } from "../utils/time-formatter";
+import { fetchAgyPools } from "../services/agy-usage";
 
 @action({ UUID: "com.len.limits.antigravity" })
 export class AntigravityProgressBars extends BaseMonitoringAction<AntigravitySettings> {
@@ -12,6 +13,22 @@ export class AntigravityProgressBars extends BaseMonitoringAction<AntigravitySet
     protected readonly themeName: ServiceTheme = "antigravity";
     private cachedLabels: Record<string, string> = {};
     private provider!: AntigravityProvider;
+
+    // Usage comes from `agy --print /usage` (plan-level pools), not the library's per-model
+    // remainingFraction, which is always 1. Pools appear as "models" keyed by pool id.
+    protected override async fetchProviderUsage(_ev: any): Promise<StandardUsageResult> {
+        try {
+            const pools = await fetchAgyPools();
+            const perModel: Record<string, any> = {};
+            for (const p of pools) {
+                perModel[p.id] = { displayName: p.label, usagePercent: p.usedPercent, resetTime: p.resetTime };
+            }
+            const first = pools[0];
+            return { overallUsagePercent: first.usedPercent, overallResetTime: first.resetTime, perModel, error: null } as unknown as StandardUsageResult;
+        } catch (err: any) {
+            return { error: { message: err?.message || String(err) } } as unknown as StandardUsageResult;
+        }
+    }
 
     override async onWillAppear(ev: any): Promise<void> {
         this.provider = this.limitsManager.getAntigravityProvider();
@@ -73,11 +90,10 @@ export class AntigravityProgressBars extends BaseMonitoringAction<AntigravitySet
     }
 
     private async sendStatusToPI(ev: any): Promise<void> {
-        const loggedIn = await this.provider.isLoggedIn();
         await streamDeck.ui.sendToPropertyInspector({
             event: "status",
-            loggedIn,
-            email: this.provider.getLoggedInEmail()
+            loggedIn: true,
+            email: "agy /usage"
         });
     }
 
@@ -115,7 +131,7 @@ export class AntigravityProgressBars extends BaseMonitoringAction<AntigravitySet
         const labels = this.getModelLabels();
         const mergedLabels = { ...this.cachedLabels, ...labels };
         this.cachedLabels = mergedLabels;
-        const email = this.provider.getLoggedInEmail() || undefined;
+        const email = "agy /usage";
 
         for (const instance of [...this.instances.values()]) {
             const settings = (instance.settings ?? {}) as AntigravitySettings;
@@ -173,12 +189,12 @@ export class AntigravityProgressBars extends BaseMonitoringAction<AntigravitySet
         const layout: TileLayout = settings.layout ?? "bars";
 
         if (layout === "ring") {
-            return this.tileDisplay([this.modelSlot(settings.model ?? "", result)], layout);
+            return this.tileDisplay([this.modelSlot(settings.model || "gemini-weekly", result)], layout);
         }
 
         return this.tileDisplay([
-            this.modelSlot(settings.topModel ?? "", result),
-            this.modelSlot(settings.bottomModel ?? "", result)
+            this.modelSlot(settings.topModel || "gemini-weekly", result),
+            this.modelSlot(settings.bottomModel || "gemini-5h", result)
         ], layout);
     }
 

@@ -1,213 +1,213 @@
 {
-  "Name": "AI Usage Limits",
-  "Version": "0.1.25.0",
-  "Author": "len",
-  "Actions": [
-    {
-      "Name": "Claude (Native)",
-      "UUID": "com.len.limits.progress",
-      "Icon": "imgs/actions/counter/icon",
-      "Tooltip": "Displays Claude usage: session, weekly or Sonnet weekly.",
-      "PropertyInspectorPath": "ui/claude-settings.html",
-      "Controllers": [
-        "Keypad",
-        "Encoder"
-      ],
-      "Encoder": {
-        "layout": "layouts/full-view.json",
-        "StackColor": "#D97757",
-        "TriggerDescription": {
-          "Rotate": "Refresh",
-          "Touch": "Refresh",
-          "Push": "Refresh"
-        }
+   "Name": "AI Usage Limits",
+   "Version": "0.1.26.0",
+   "Author": "len",
+   "Actions": [
+      {
+         "Name": "Claude (Native)",
+         "UUID": "com.len.limits.progress",
+         "Icon": "imgs/actions/counter/icon",
+         "Tooltip": "Displays Claude usage: session, weekly or Sonnet weekly.",
+         "PropertyInspectorPath": "ui/claude-settings.html",
+         "Controllers": [
+            "Keypad",
+            "Encoder"
+         ],
+         "Encoder": {
+            "layout": "layouts/full-view.json",
+            "StackColor": "#D97757",
+            "TriggerDescription": {
+               "Rotate": "Refresh",
+               "Touch": "Refresh",
+               "Push": "Refresh"
+            }
+         },
+         "States": [
+            {
+               "Image": "imgs/actions/counter/key",
+               "TitleAlignment": "middle"
+            }
+         ]
       },
-      "States": [
-        {
-          "Image": "imgs/actions/counter/key",
-          "TitleAlignment": "middle"
-        }
-      ]
-    },
-    {
-      "Name": "Codex (Native)",
-      "UUID": "com.len.limits.codex.progress",
-      "Icon": "imgs/actions/counter/icon",
-      "Tooltip": "Displays Codex usage: session, weekly, usage limit resets or credits.",
-      "PropertyInspectorPath": "ui/codex-settings.html",
-      "Controllers": [
-        "Keypad",
-        "Encoder"
-      ],
-      "Encoder": {
-        "layout": "layouts/full-view.json",
-        "StackColor": "#10B981",
-        "TriggerDescription": {
-          "Rotate": "Refresh",
-          "Touch": "Refresh",
-          "Push": "Refresh"
-        }
+      {
+         "Name": "Codex (Native)",
+         "UUID": "com.len.limits.codex.progress",
+         "Icon": "imgs/actions/counter/icon",
+         "Tooltip": "Displays Codex usage: session, weekly, usage limit resets or credits.",
+         "PropertyInspectorPath": "ui/codex-settings.html",
+         "Controllers": [
+            "Keypad",
+            "Encoder"
+         ],
+         "Encoder": {
+            "layout": "layouts/full-view.json",
+            "StackColor": "#10B981",
+            "TriggerDescription": {
+               "Rotate": "Refresh",
+               "Touch": "Refresh",
+               "Push": "Refresh"
+            }
+         },
+         "States": [
+            {
+               "Image": "imgs/actions/counter/key",
+               "TitleAlignment": "middle"
+            }
+         ]
       },
-      "States": [
-        {
-          "Image": "imgs/actions/counter/key",
-          "TitleAlignment": "middle"
-        }
-      ]
-    },
-    {
-      "Name": "Antigravity (Native)",
-      "UUID": "com.len.limits.antigravity",
-      "Icon": "imgs/actions/counter/icon",
-      "Tooltip": "Displays Antigravity usage.",
-      "PropertyInspectorPath": "ui/antigravity-settings.html",
-      "Controllers": [
-        "Keypad",
-        "Encoder"
-      ],
-      "Encoder": {
-        "layout": "layouts/full-view.json",
-        "StackColor": "#8B5CF6",
-        "TriggerDescription": {
-          "Rotate": "Refresh",
-          "Touch": "Refresh",
-          "Push": "Refresh"
-        }
+      {
+         "Name": "Antigravity (Native)",
+         "UUID": "com.len.limits.antigravity",
+         "Icon": "imgs/actions/counter/icon",
+         "Tooltip": "Displays Antigravity usage.",
+         "PropertyInspectorPath": "ui/antigravity-settings.html",
+         "Controllers": [
+            "Keypad",
+            "Encoder"
+         ],
+         "Encoder": {
+            "layout": "layouts/full-view.json",
+            "StackColor": "#8B5CF6",
+            "TriggerDescription": {
+               "Rotate": "Refresh",
+               "Touch": "Refresh",
+               "Push": "Refresh"
+            }
+         },
+         "States": [
+            {
+               "Image": "imgs/actions/counter/key",
+               "TitleAlignment": "middle"
+            }
+         ]
       },
-      "States": [
-        {
-          "Image": "imgs/actions/counter/key",
-          "TitleAlignment": "middle"
-        }
-      ]
-    },
-    {
-      "Name": "Gemini CLI (Native)",
-      "UUID": "com.len.limits.gemini-cli",
-      "Icon": "imgs/actions/counter/icon",
-      "Tooltip": "Displays Gemini CLI usage.",
-      "PropertyInspectorPath": "ui/gemini-settings.html",
-      "Controllers": [
-        "Keypad",
-        "Encoder"
-      ],
-      "Encoder": {
-        "layout": "layouts/full-view.json",
-        "StackColor": "#4285F4",
-        "TriggerDescription": {
-          "Rotate": "Refresh",
-          "Touch": "Refresh",
-          "Push": "Refresh"
-        }
+      {
+         "Name": "Gemini CLI (Native)",
+         "UUID": "com.len.limits.gemini-cli",
+         "Icon": "imgs/actions/counter/icon",
+         "Tooltip": "Displays Gemini CLI usage.",
+         "PropertyInspectorPath": "ui/gemini-settings.html",
+         "Controllers": [
+            "Keypad",
+            "Encoder"
+         ],
+         "Encoder": {
+            "layout": "layouts/full-view.json",
+            "StackColor": "#4285F4",
+            "TriggerDescription": {
+               "Rotate": "Refresh",
+               "Touch": "Refresh",
+               "Push": "Refresh"
+            }
+         },
+         "States": [
+            {
+               "Image": "imgs/actions/counter/key",
+               "TitleAlignment": "middle"
+            }
+         ]
       },
-      "States": [
-        {
-          "Image": "imgs/actions/counter/key",
-          "TitleAlignment": "middle"
-        }
-      ]
-    },
-    {
-      "Name": "MiniMax (Native)",
-      "UUID": "com.len.limits.minimax",
-      "Icon": "imgs/actions/counter/icon",
-      "Tooltip": "Displays MiniMax M* usage.",
-      "PropertyInspectorPath": "ui/minimax-settings.html",
-      "Controllers": [
-        "Keypad",
-        "Encoder"
-      ],
-      "Encoder": {
-        "layout": "layouts/full-view.json",
-        "StackColor": "#3B82F6",
-        "TriggerDescription": {
-          "Rotate": "Refresh",
-          "Touch": "Refresh",
-          "Push": "Refresh"
-        }
+      {
+         "Name": "MiniMax (Native)",
+         "UUID": "com.len.limits.minimax",
+         "Icon": "imgs/actions/counter/icon",
+         "Tooltip": "Displays MiniMax M* usage.",
+         "PropertyInspectorPath": "ui/minimax-settings.html",
+         "Controllers": [
+            "Keypad",
+            "Encoder"
+         ],
+         "Encoder": {
+            "layout": "layouts/full-view.json",
+            "StackColor": "#3B82F6",
+            "TriggerDescription": {
+               "Rotate": "Refresh",
+               "Touch": "Refresh",
+               "Push": "Refresh"
+            }
+         },
+         "States": [
+            {
+               "Image": "imgs/actions/counter/key",
+               "TitleAlignment": "middle"
+            }
+         ]
       },
-      "States": [
-        {
-          "Image": "imgs/actions/counter/key",
-          "TitleAlignment": "middle"
-        }
-      ]
-    },
-    {
-      "Name": "OpenRouter (Native)",
-      "UUID": "com.len.limits.openrouter",
-      "Icon": "imgs/actions/counter/icon",
-      "Tooltip": "Displays OpenRouter key limit and spend.",
-      "PropertyInspectorPath": "ui/openrouter-settings.html",
-      "Controllers": [
-        "Keypad",
-        "Encoder"
-      ],
-      "Encoder": {
-        "layout": "layouts/full-view.json",
-        "StackColor": "#6467F2",
-        "TriggerDescription": {
-          "Rotate": "Refresh",
-          "Touch": "Refresh",
-          "Push": "Refresh"
-        }
+      {
+         "Name": "OpenRouter (Native)",
+         "UUID": "com.len.limits.openrouter",
+         "Icon": "imgs/actions/counter/icon",
+         "Tooltip": "Displays OpenRouter key limit and spend.",
+         "PropertyInspectorPath": "ui/openrouter-settings.html",
+         "Controllers": [
+            "Keypad",
+            "Encoder"
+         ],
+         "Encoder": {
+            "layout": "layouts/full-view.json",
+            "StackColor": "#6467F2",
+            "TriggerDescription": {
+               "Rotate": "Refresh",
+               "Touch": "Refresh",
+               "Push": "Refresh"
+            }
+         },
+         "States": [
+            {
+               "Image": "imgs/actions/counter/key",
+               "TitleAlignment": "middle"
+            }
+         ]
       },
-      "States": [
-        {
-          "Image": "imgs/actions/counter/key",
-          "TitleAlignment": "middle"
-        }
-      ]
-    },
-    {
-      "Name": "CodexBar backend",
-      "UUID": "com.len.limits.codexbar",
-      "Icon": "imgs/actions/counter/icon",
-      "Tooltip": "Displays any provider configured in a local CodexBar server.",
-      "PropertyInspectorPath": "ui/codexbar-settings.html",
-      "Controllers": [
-        "Keypad",
-        "Encoder"
-      ],
-      "Encoder": {
-        "layout": "layouts/full-view.json",
-        "StackColor": "#A5B4FC",
-        "TriggerDescription": {
-          "Rotate": "Refresh",
-          "Touch": "Refresh",
-          "Push": "Refresh"
-        }
+      {
+         "Name": "CodexBar backend",
+         "UUID": "com.len.limits.codexbar",
+         "Icon": "imgs/actions/counter/icon",
+         "Tooltip": "Displays any provider configured in a local CodexBar server.",
+         "PropertyInspectorPath": "ui/codexbar-settings.html",
+         "Controllers": [
+            "Keypad",
+            "Encoder"
+         ],
+         "Encoder": {
+            "layout": "layouts/full-view.json",
+            "StackColor": "#A5B4FC",
+            "TriggerDescription": {
+               "Rotate": "Refresh",
+               "Touch": "Refresh",
+               "Push": "Refresh"
+            }
+         },
+         "States": [
+            {
+               "Image": "imgs/actions/counter/key",
+               "TitleAlignment": "middle"
+            }
+         ]
+      }
+   ],
+   "Category": "AI Usage Limits",
+   "CategoryIcon": "imgs/plugin/category-icon",
+   "CodePath": "bin/plugin.js",
+   "Description": "Track AI usage limits and reset times for native providers or any provider configured in CodexBar.",
+   "Icon": "imgs/plugin/plugin-icon",
+   "SDKVersion": 3,
+   "Software": {
+      "MinimumVersion": "7.1"
+   },
+   "OS": [
+      {
+         "Platform": "mac",
+         "MinimumVersion": "12"
       },
-      "States": [
-        {
-          "Image": "imgs/actions/counter/key",
-          "TitleAlignment": "middle"
-        }
-      ]
-    }
-  ],
-  "Category": "AI Usage Limits",
-  "CategoryIcon": "imgs/plugin/category-icon",
-  "CodePath": "bin/plugin.js",
-  "Description": "Track AI usage limits and reset times for native providers or any provider configured in CodexBar.",
-  "Icon": "imgs/plugin/plugin-icon",
-  "SDKVersion": 3,
-  "Software": {
-    "MinimumVersion": "7.1"
-  },
-  "OS": [
-    {
-      "Platform": "mac",
-      "MinimumVersion": "12"
-    },
-    {
-      "Platform": "windows",
-      "MinimumVersion": "10"
-    }
-  ],
-  "Nodejs": {
-    "Version": "24",
-    "Debug": "enabled"
-  },
-  "UUID": "com.len.limits"
+      {
+         "Platform": "windows",
+         "MinimumVersion": "10"
+      }
+   ],
+   "Nodejs": {
+      "Version": "24",
+      "Debug": "enabled"
+   },
+   "UUID": "com.len.limits"
 }
