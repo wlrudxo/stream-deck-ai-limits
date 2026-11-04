@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { existsSync } from "node:fs";
+import { existsSync, utimesSync } from "node:fs";
 import { join } from "node:path";
 
 // Parser adapted from C:\GitProject\_tools\Paseo\plugins\agent-card\server\agy-usage.ts (wlrudxo/_tools).
@@ -40,8 +40,20 @@ export function findAgy(): string | null {
     return p && existsSync(p) ? p : null;
 }
 
+// agy's background update check spawns a detached `agy --version` that opens a
+// visible console window even when the parent is hidden. Refresh the check stamp
+// before a usage-only call so polling never triggers it.
+function skipAgyUpdateCheck(): void {
+    const home = process.env["USERPROFILE"] ?? process.env["HOME"] ?? "";
+    const stamp = home ? join(home, ".gemini", "antigravity-cli", "last_check.timestamp") : "";
+    if (!stamp || !existsSync(stamp)) return;
+    const now = new Date();
+    try { utimesSync(stamp, now, now); } catch { /* never block usage polling */ }
+}
+
 export function fetchAgyPools(binary = findAgy()): Promise<AgyPool[]> {
     if (!binary) return Promise.reject(new Error("agy not found"));
+    skipAgyUpdateCheck();
     return new Promise((resolve, reject) => {
         execFile(binary, ["--print", "/usage", "--print-timeout", "20s"],
             { timeout: 30_000, windowsHide: true, encoding: "utf8" },
