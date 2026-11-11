@@ -5,7 +5,7 @@ import { BaseMonitoringAction } from "./base-monitoring-action";
 import { ServiceTheme } from "../interfaces/theme";
 import { Slot } from "../ui/progress-bar-renderer";
 import { formatTimeUntil } from "../utils/time-formatter";
-import { fetchAgyPools } from "../services/agy-usage";
+import { displayUsage } from "../services/display-usage";
 
 @action({ UUID: "com.len.limits.antigravity" })
 export class AntigravityProgressBars extends BaseMonitoringAction<AntigravitySettings> {
@@ -14,20 +14,11 @@ export class AntigravityProgressBars extends BaseMonitoringAction<AntigravitySet
     private cachedLabels: Record<string, string> = {};
     private provider!: AntigravityProvider;
 
-    // Usage comes from `agy --print /usage` (plan-level pools), not the library's per-model
-    // remainingFraction, which is always 1. Pools appear as "models" keyed by pool id.
+    protected override readonly monitoringIntervalMs = 60000;
     protected override async fetchProviderUsage(_ev: any): Promise<StandardUsageResult> {
-        try {
-            const pools = await fetchAgyPools();
-            const perModel: Record<string, any> = {};
-            for (const p of pools) {
-                perModel[p.id] = { displayName: p.label, usagePercent: p.usedPercent, resetTime: p.resetTime };
-            }
-            const first = pools[0];
-            return { overallUsagePercent: first.usedPercent, overallResetTime: first.resetTime, perModel, error: null } as unknown as StandardUsageResult;
-        } catch (err: any) {
-            return { error: { message: err?.message || String(err) } } as unknown as StandardUsageResult;
-        }
+        const result = displayUsage('antigravity');
+        streamDeck.logger.info(`[antigravity] Local display cache: ${JSON.stringify(result.perModel)}; error=${result.error?.message ?? 'none'}`);
+        return result;
     }
 
     override async onWillAppear(ev: any): Promise<void> {
@@ -173,7 +164,7 @@ export class AntigravityProgressBars extends BaseMonitoringAction<AntigravitySet
 
         const fallbackLabel = this.cachedLabels[modelKey] || modelKey;
         return {
-            usage: 100,
+            usage: NaN,
             resetTime: null,
             label: this.shortLabel(fallbackLabel)
         };
@@ -200,6 +191,7 @@ export class AntigravityProgressBars extends BaseMonitoringAction<AntigravitySet
 
     private modelSlot(modelKey: string, result: StandardUsageResult): Slot {
         const data = this.getModelData(modelKey, result);
+        if (!Number.isFinite(data.usage)) return { kind: "stat", label: data.label, valueText: "—", caption: "no data", muted: true };
         return {
             kind: "gauge",
             label: data.label,

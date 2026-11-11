@@ -1,0 +1,13 @@
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { mkdirSync, writeFileSync } from 'node:fs';
+import { displayUsage } from '../src/services/display-usage.ts';
+const root = new URL('../tmp/display-test/', import.meta.url); mkdirSync(root, {recursive:true});
+const now = Date.parse('2026-11-11T02:00:00Z');
+const at = '2026-11-11T01:59:00Z', reset = '2026-11-12T00:00:00Z';
+writeFileSync(new URL('display_claude.json', root), JSON.stringify({successfulAt:at, windows:[{id:'weekly',usedPct:67,resetsAt:reset},{id:'weekly_model_fable',usedPct:60,resetsAt:reset},{id:'five_hour',usedPct:0,resetsAt:reset}]}));
+writeFileSync(new URL('samples.jsonl', root), JSON.stringify({provider:'argon',used:19,at:'2026-11-10T00:00:00Z',until:at,reset}));
+const path = (await import('node:url')).fileURLToPath(root);
+test('preserves separate Fable and total buckets, including zero',()=> {const r=displayUsage('claude',path,now); assert.equal(r.perModel.seven_day.usagePercent,67); assert.equal(r.perModel['7d_fable_quota'].usagePercent,60); assert.equal(r.perModel.five_hour.usagePercent,0);});
+test('accepts compressed sample until and both Argon IDs',()=>{const r=displayUsage('antigravity',path,now); assert.equal(r.perModel['argon-weekly'].usagePercent,19); assert.equal(r.perModel['gemini-argon-wtu-weekly'].usagePercent,19);});
+test('stale, expired, missing cache fails closed',()=>{assert.ok(displayUsage('claude',path,now+240000).error); assert.ok(displayUsage('antigravity',path,now+86400000).error); assert.ok(displayUsage('claude',path+'missing',now).error);});

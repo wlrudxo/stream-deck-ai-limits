@@ -1,3 +1,5 @@
+import streamDeck from "@elgato/streamdeck";
+import { displayUsage } from "../services/display-usage";
 import { action } from "@elgato/streamdeck";
 import { ModelUsage, ProviderName, StandardUsageResult } from "@lenadweb/ai-limits";
 import { ClaudeMetric, ClaudeScope, ClaudeSettings, TileLayout } from "../interfaces/settings";
@@ -19,6 +21,13 @@ const SONNET_KEY = "7d_sonnet_quota";
 @action({ UUID: "com.len.limits.progress" })
 export class ProgressBars extends BaseMonitoringAction<ClaudeSettings> {
     protected readonly providerName = ProviderName.Claude;
+    protected override readonly monitoringIntervalMs = 60000;
+    protected override async fetchProviderUsage(_ev: any): Promise<StandardUsageResult> {
+        const result = displayUsage('claude');
+        streamDeck.logger.info(`[claude] Local display cache: ${JSON.stringify(result.perModel)}; error=${result.error?.message ?? 'none'}`);
+        return result;
+    }
+
     protected readonly themeName: ServiceTheme = "claude";
 
     protected override async refresh(ev: any): Promise<void> {

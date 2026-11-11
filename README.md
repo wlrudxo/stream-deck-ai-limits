@@ -196,3 +196,11 @@ Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) before
 ## License
 
 [MIT](LICENSE) (c) [lenadweb](https://github.com/lenadweb)
+
+## 로컬 사용량 캐시 연결
+
+Claude와 Argon 버튼은 기존 UsageBudget_Alert가 남긴 `%LOCALAPPDATA%/usage_budget/display_claude.json`과 `samples.jsonl`을 1분마다 읽는다. 외부 API는 호출하지 않는다. Claude 전체 주간과 Fable 전용 주간을 구분하고 Argon의 `argon-weekly`, `gemini-argon-wtu-weekly`를 함께 지원한다. 마지막 관측이 3분을 넘거나 리셋이 지났으면 `Cache stale`을 표시한다. 다른 Antigravity 모델은 이 캐시에 없어 `no data`로 표시한다.
+
+유지 소스는 기존 fork `wlrudxo/stream-deck-ai-limits`, 변경 기준은 `9d8c145`다. 설치 폴더는 공식 `streamdeck link com.len.limits.sdPlugin`으로 이 repo에 연결했다. `npm run build` 후 Stream Deck에서 플러그인을 다시 로드한다. 개발 모드가 켜진 경우 `Streamdeck_manager/deploy_limits_cache.py`가 공식 restart 명령만 실행한다. 개발 모드가 꺼져 있으면 사용자에게 본체 재시작을 요청하고 종료 코드 2로 끝난다. 자동으로 개발 모드를 켜거나 본체를 재시작하지 않는다.
+
+Marketplace 배포본 직접 수정은 서명 검사로 차단되므로 사용하지 않는다. Marketplace 재설치로 연결이 바뀌어도 fork 소스는 보존된다. 업데이트 뒤에는 연결과 호환성을 확인한다. 자동 갱신 감시나 예약은 추가하지 않는다.
