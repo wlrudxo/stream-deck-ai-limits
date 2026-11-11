@@ -54,9 +54,7 @@ const BASE = {
         ringR: 46, ringRBare: 50, ringSw: 10, ringSwBare: 11, ringInnerPad: 5,
         ringValue: 30, ringValueMin: 10, ringLabel: 11, ringCaption: 11,
         ringLabelDy: -18, ringValueDy: 9, ringCaptionDy: 26,
-        loaderR: 22, loaderSw: 6,
-        icon: 14, iconStroke: 2, iconGap: 22, errText: 13, errLine: 16,
-        msg: 16, msgLine: 22
+        icon: 14, iconStroke: 2, iconGap: 22, errText: 13, errLine: 16
     },
     dial: {
         side: 12, edge: 9, ringEdge: 4, minSide: 10, minEdge: 3,
@@ -66,9 +64,7 @@ const BASE = {
         ringR: 40, ringRBare: 40, ringSw: 9, ringSwBare: 9, ringInnerPad: 4,
         ringValue: 24, ringValueMin: 9, ringLabel: 10, ringCaption: 10,
         ringLabelDy: -15, ringValueDy: 8, ringCaptionDy: 22,
-        loaderR: 17, loaderSw: 5,
-        icon: 14, iconStroke: 2, iconGap: 16, errText: 12, errLine: 16,
-        msg: 15, msgLine: 19
+        icon: 14, iconStroke: 2, iconGap: 16, errText: 12, errLine: 16
     }
 };
 
@@ -109,49 +105,7 @@ export class ProgressBarRenderer {
             label: '#928AAC',
             barBg: '#27223A',
             barFill: '#9D7BFF'
-        },
-        'gemini-cli': {
-            primary: '#5B9BFF',
-            secondary: '#8AB4F8',
-            background: '#0E0F11',
-            text: '#ECEDEF',
-            label: '#8E929A',
-            barBg: '#23272D',
-            barFill: '#5B9BFF'
-        },
-        minimax: {
-            primary: '#F8068D',
-            secondary: '#FF54B0',
-            background: '#18090F',
-            text: '#FDEBF4',
-            label: '#A57E92',
-            barBg: '#2E1320',
-            barFill: '#FF1F99'
-        },
-        openrouter: {
-            primary: '#7B7DFF',
-            secondary: '#8B8DF6',
-            background: '#0B0B0E',
-            text: '#F5F5F8',
-            label: '#8A8D96',
-            barBg: '#1D1D25',
-            barFill: '#8284FF'
-        },
-        codexbar: {
-            primary: '#A5B4FC',
-            secondary: '#C4B5FD',
-            background: '#12131B',
-            text: '#F5F5FF',
-            label: '#9CA3B8',
-            barBg: '#25283A',
-            barFill: '#A5B4FC'
         }
-    };
-
-    private static readonly serviceLabels: Partial<Record<ServiceTheme, string>> = {
-        'gemini-cli': 'Gemini',
-        openrouter: 'OpenRouter',
-        codexbar: 'CodexBar'
     };
 
     private static readonly SANS = "'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif";
@@ -164,40 +118,7 @@ export class ProgressBarRenderer {
     };
 
     private serviceName(theme: ServiceTheme): string {
-        return ProgressBarRenderer.serviceLabels[theme] ?? theme.charAt(0).toUpperCase() + theme.slice(1);
-    }
-
-    render(
-        session: number,
-        week: number,
-        theme: ServiceTheme = 'claude',
-        sessionResetTime?: string | number | null,
-        weekResetTime?: string | number | null,
-        sessionLabel: string = "Session",
-        weekLabel: string = "Week",
-        width: number = 144,
-        height: number = 144,
-        sessionValueText?: string,
-        weekValueText?: string,
-        opts: RenderOptions = {}
-    ): string {
-        const slots: Slot[] = [
-            {
-                kind: "gauge",
-                label: sessionLabel,
-                percent: session,
-                valueText: sessionValueText,
-                caption: sessionResetTime != null ? this.formatResetTime(sessionResetTime) : undefined
-            },
-            {
-                kind: "gauge",
-                label: weekLabel,
-                percent: week,
-                valueText: weekValueText,
-                caption: weekResetTime != null ? this.formatResetTime(weekResetTime) : undefined
-            }
-        ];
-        return this.renderSlots(slots, theme, width, height, opts);
+        return theme.charAt(0).toUpperCase() + theme.slice(1);
     }
 
     renderSlots(slots: Slot[], theme: ServiceTheme = 'claude', width: number = 144, height: number = 144, opts: RenderOptions = {}): string {
@@ -207,7 +128,7 @@ export class ProgressBarRenderer {
         const displayedSlots = slots.slice(0, 2);
         const geo = this.geometry(width, height, isDial, showName, displayedSlots.length, this.preset(opts));
 
-        const chrome = this.background(width, height, colors) + this.header(opts.serviceName ?? this.serviceName(theme), colors, geo, isDial, showName);
+        const chrome = this.background(width, height, colors) + this.header(this.serviceName(theme), colors, geo, isDial, showName);
         const modules = displayedSlots.map((slot, i) =>
             slot.kind === "stat"
                 ? this.statModule(slot, colors, theme, geo, geo.moduleTop[i], isDial)
@@ -239,7 +160,7 @@ export class ProgressBarRenderer {
         const cy = this.round(ring.cy);
 
         let body = this.background(width, height, colors)
-            + this.header(opts.serviceName ?? this.serviceName(theme), colors, geo, isDial, showName);
+            + this.header(this.serviceName(theme), colors, geo, isDial, showName);
 
         body += `<circle cx="${cx}" cy="${cy}" r="${ring.r}" fill="none" stroke="${colors.barBg}" stroke-width="${ring.sw}" />`;
         if (isGauge && pct > 0) {
@@ -490,29 +411,6 @@ export class ProgressBarRenderer {
         return out;
     }
 
-    renderLoader(angle: number, theme: ServiceTheme = 'claude', width: number = 144, height: number = 144, opts: RenderOptions = {}): string {
-        const colors = this.themes[theme];
-        const isDial = this.isDial(width, height);
-        const showName = opts.showName !== false;
-        const p = this.preset(opts);
-        const b = isDial ? BASE.dial : BASE.key;
-        const geo = this.geometry(width, height, isDial, showName, 2, p);
-        const cx = (geo.left + geo.right) / 2;
-        const cy = this.round((geo.bandTop + geo.bandBottom) / 2);
-        const r = this.round(b.loaderR * p.type);
-        const sw = snap(b.loaderSw * p.type);
-        const dash = 2 * Math.PI * r;
-
-        const ring = `<circle cx="${cx}" cy="${cy}" r="${r}" stroke="${colors.barBg}" stroke-width="${sw}" fill="none" />`
-            + `<circle cx="${cx}" cy="${cy}" r="${r}" stroke="${colors.primary}" stroke-width="${sw}" fill="none" stroke-linecap="round" `
-            + `stroke-dasharray="${this.round(dash * 0.28)} ${this.round(dash)}" transform="rotate(${angle} ${cx} ${cy})" />`;
-
-        const body = this.background(width, height, colors)
-            + this.header(opts.serviceName ?? this.serviceName(theme), colors, geo, isDial, showName)
-            + ring;
-        return this.svg(width, height, body);
-    }
-
     renderError(message: string, theme: ServiceTheme = 'claude', width: number = 144, height: number = 144, opts: RenderOptions = {}): string {
         const colors = this.themes[theme];
         const isDial = this.isDial(width, height);
@@ -541,34 +439,8 @@ export class ProgressBarRenderer {
         const text = lines.map((l, i) => this.txt(cx, startY + i * lineH, l, size, 600, colors.text, "middle", ProgressBarRenderer.SANS)).join("");
 
         const body = this.background(width, height, colors)
-            + this.header(opts.serviceName ?? this.serviceName(theme), colors, geo, isDial, showName)
+            + this.header(this.serviceName(theme), colors, geo, isDial, showName)
             + icon + text;
-        return this.svg(width, height, body);
-    }
-
-    renderPlaceholder(theme: ServiceTheme = 'claude', width: number = 144, height: number = 144, opts: RenderOptions = {}): string {
-        return this.renderLoader(0, theme, width, height, opts);
-    }
-
-    renderMessage(lines: string[], theme: ServiceTheme = 'claude', width: number = 144, height: number = 144, opts: RenderOptions = {}): string {
-        const colors = this.themes[theme];
-        const isDial = this.isDial(width, height);
-        const showName = opts.showName !== false;
-        const p = this.preset(opts);
-        const b = isDial ? BASE.dial : BASE.key;
-        const geo = this.geometry(width, height, isDial, showName, 2, p);
-        const cx = (geo.left + geo.right) / 2;
-        const size = snap(b.msg * p.type);
-        const lineH = b.msgLine * p.type;
-        const cap = size * CAP;
-        // Centre the ink of the block, not its baselines.
-        const startY = (geo.bandTop + geo.bandBottom) / 2 + cap / 2 - ((lines.length - 1) * lineH) / 2;
-        const text = lines.map((line, i) =>
-            this.txt(cx, startY + i * lineH, this.escape(line), size, 700, colors.text, "middle", ProgressBarRenderer.SANS)
-        ).join("");
-        const body = this.background(width, height, colors)
-            + this.header(opts.serviceName ?? this.serviceName(theme), colors, geo, isDial, showName)
-            + text;
         return this.svg(width, height, body);
     }
 
@@ -666,25 +538,5 @@ export class ProgressBarRenderer {
 
     private escape(s: string): string {
         return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
-    }
-
-    private formatResetTime(resetTime: string | number): string {
-        const resetDate = typeof resetTime === 'number' ? new Date(resetTime * 1000) : new Date(resetTime);
-        const diffMs = resetDate.getTime() - Date.now();
-        if (diffMs <= 0) return "now";
-
-        const diffMinutes = Math.floor(diffMs / 60000);
-        const diffHours = Math.floor(diffMinutes / 60);
-        const diffDays = Math.floor(diffHours / 24);
-
-        if (diffDays > 0) {
-            const hours = diffHours % 24;
-            return hours > 0 ? `${diffDays}d ${hours}h` : `${diffDays}d`;
-        }
-        if (diffHours > 0) {
-            const minutes = diffMinutes % 60;
-            return minutes > 0 ? `${diffHours}h ${minutes}m` : `${diffHours}h`;
-        }
-        return `${diffMinutes}m`;
     }
 }

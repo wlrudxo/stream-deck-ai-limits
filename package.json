@@ -1,46 +1,39 @@
 {
-   "name": "stream-deck-ai-limits",
-   "version": "0.1.26",
-   "description": "Stream Deck plugin to monitor AI agent limits and quotas across multiple providers.",
-   "type": "module",
-   "scripts": {
-      "build": "rollup -c",
-      "test": "node --test",
-      "link": "streamdeck link com.len.limits.sdPlugin",
-      "unlink": "streamdeck unlink com.len.limits",
-      "watch": "rollup -c -w --watch.onEnd=\"streamdeck restart com.len.limits\"",
-      "version:bump": "node scripts/bump-version.mjs",
-      "release": "npm run version:bump && npm run build && streamdeck pack com.len.limits.sdPlugin --force --output .",
-      "build:cache": "node scripts/prepare-cache.mjs && rollup -c rollup.cache.mjs",
-      "pack:cache": "npm run build:cache && streamdeck pack com.wlrudxo.usagecache.sdPlugin --output dist --force --no-update-check"
-   },
-   "repository": {
-      "type": "git",
-      "url": "git+https://github.com/lenadweb/stream-deck-ai-limits.git"
-   },
-   "bugs": {
-      "url": "https://github.com/lenadweb/stream-deck-ai-limits/issues"
-   },
-   "homepage": "https://github.com/lenadweb/stream-deck-ai-limits#readme",
-   "author": "lenadweb <lenadweber@gmail.com>",
-   "license": "MIT",
-   "devDependencies": {
-      "@elgato/cli": "^1.7.0",
-      "@rollup/plugin-commonjs": "^28.0.0",
-      "@rollup/plugin-json": "^6.1.0",
-      "@rollup/plugin-node-resolve": "^15.2.2",
-      "@rollup/plugin-terser": "^0.4.4",
-      "@rollup/plugin-typescript": "^12.1.0",
-      "@tsconfig/node24": "^24.0.5",
-      "@types/node": "~24.19.2",
-      "rollup": "^4.0.2",
-      "tslib": "^2.6.2",
-      "typescript": "^5.2.2"
-   },
-   "dependencies": {
-      "@elgato/streamdeck": "^2.0.0",
-      "@lenadweb/ai-limits": "^1.2.0",
-      "google-auth-library": "^10.6.1",
-      "strip-ansi": "^7.1.2"
-   }
+  "name": "stream-deck-usage-cache",
+  "version": "1.0.1",
+  "description": "Stream Deck display for the local usage_budget cache.",
+  "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "build": "node scripts/prepare-cache.mjs && rollup -c",
+    "build:cache": "npm run build",
+    "pack:cache": "npm run build && streamdeck pack com.wlrudxo.usagecache.sdPlugin --output dist --force --no-update-check",
+    "verify:cache": "node scripts/verify-cache.mjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wlrudxo/stream-deck-ai-limits.git"
+  },
+  "bugs": {
+    "url": "https://github.com/wlrudxo/stream-deck-ai-limits/issues"
+  },
+  "homepage": "https://github.com/wlrudxo/stream-deck-ai-limits#readme",
+  "author": "lenadweb <lenadweber@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@elgato/cli": "^1.7.0",
+    "@rollup/plugin-commonjs": "^28.0.0",
+    "@rollup/plugin-node-resolve": "^15.2.2",
+    "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-typescript": "^12.1.0",
+    "@tsconfig/node24": "^24.0.5",
+    "@types/node": "~24.19.2",
+    "rollup": "^4.0.2",
+    "tslib": "^2.6.2",
+    "typescript": "^5.2.2",
+    "ws": "^8.18.0"
+  },
+  "dependencies": {
+    "@elgato/streamdeck": "^2.0.0"
+  }
 }

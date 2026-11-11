@@ -1,0 +1,104 @@
+{
+  "Name": "Paseo Usage Cache",
+  "Version": "1.0.1.0",
+  "Author": "wlrudxo",
+  "Actions": [
+    {
+      "Name": "Claude Cache",
+      "UUID": "com.wlrudxo.usagecache.progress",
+      "Icon": "imgs/actions/counter/icon",
+      "Tooltip": "Local usage cache",
+      "PropertyInspectorPath": "ui/settings.html",
+      "Controllers": [
+        "Keypad",
+        "Encoder"
+      ],
+      "Encoder": {
+        "layout": "layouts/full-view.json",
+        "StackColor": "#D97757",
+        "TriggerDescription": {
+          "Rotate": "Refresh",
+          "Touch": "Refresh",
+          "Push": "Refresh"
+        }
+      },
+      "States": [
+        {
+          "Image": "imgs/actions/counter/key",
+          "TitleAlignment": "middle"
+        }
+      ]
+    },
+    {
+      "Name": "GPT Cache",
+      "UUID": "com.wlrudxo.usagecache.codex.progress",
+      "Icon": "imgs/actions/counter/icon",
+      "Tooltip": "Local usage cache",
+      "PropertyInspectorPath": "ui/settings.html",
+      "Controllers": [
+        "Keypad",
+        "Encoder"
+      ],
+      "Encoder": {
+        "layout": "layouts/full-view.json",
+        "StackColor": "#10B981",
+        "TriggerDescription": {
+          "Rotate": "Refresh",
+          "Touch": "Refresh",
+          "Push": "Refresh"
+        }
+      },
+      "States": [
+        {
+          "Image": "imgs/actions/counter/key",
+          "TitleAlignment": "middle"
+        }
+      ]
+    },
+    {
+      "Name": "Argon Cache",
+      "UUID": "com.wlrudxo.usagecache.antigravity",
+      "Icon": "imgs/actions/counter/icon",
+      "Tooltip": "Local usage cache",
+      "PropertyInspectorPath": "ui/settings.html",
+      "Controllers": [
+        "Keypad",
+        "Encoder"
+      ],
+      "Encoder": {
+        "layout": "layouts/full-view.json",
+        "StackColor": "#8B5CF6",
+        "TriggerDescription": {
+          "Rotate": "Refresh",
+          "Touch": "Refresh",
+          "Push": "Refresh"
+        }
+      },
+      "States": [
+        {
+          "Image": "imgs/actions/counter/key",
+          "TitleAlignment": "middle"
+        }
+      ]
+    }
+  ],
+  "Category": "Paseo Usage Cache",
+  "CategoryIcon": "imgs/plugin/category-icon",
+  "CodePath": "bin/plugin.js",
+  "Description": "Local cached Claude, Argon and GPT usage. No provider API calls.",
+  "Icon": "imgs/plugin/plugin-icon",
+  "SDKVersion": 3,
+  "Software": {
+    "MinimumVersion": "7.1"
+  },
+  "OS": [
+    {
+      "Platform": "windows",
+      "MinimumVersion": "10"
+    }
+  ],
+  "Nodejs": {
+    "Version": "24"
+  },
+  "UUID": "com.wlrudxo.usagecache"
+}

@@ -1,10 +1,7 @@
-import {cpSync,mkdirSync,readFileSync,writeFileSync} from 'node:fs';
-const src='com.len.limits.sdPlugin', dest='com.wlrudxo.usagecache.sdPlugin';
-mkdirSync(dest,{recursive:true});
-for(const name of ['imgs','layouts']) cpSync(`${src}/${name}`,`${dest}/${name}`,{recursive:true});
-const m=JSON.parse(readFileSync(`${src}/manifest.json`));
-m.UUID='com.wlrudxo.usagecache';m.Name=m.Category='Paseo Usage Cache';m.Author='wlrudxo';m.Version='1.0.0.0';m.Description='Local cached Claude, Argon and GPT usage. No provider API calls.';m.OS=m.OS.filter(x=>x.Platform==='windows');delete m.Nodejs.Debug;
-m.Actions=m.Actions.slice(0,3).map(a=>({...a,UUID:a.UUID.replace('com.len.limits',m.UUID),PropertyInspectorPath:'ui/settings.html',Tooltip:'Local usage cache',Name:a.UUID.endsWith('antigravity')?'Argon Cache':a.UUID.endsWith('codex.progress')?'GPT Cache':'Claude Cache'}));
-writeFileSync(`${dest}/manifest.json`,JSON.stringify(m,null,2));
-mkdirSync(`${dest}/ui`,{recursive:true});
-cpSync('src/cache/settings.html',`${dest}/ui/settings.html`);
+import { cpSync, mkdirSync } from 'node:fs';
+const source = 'src/cache', destination = 'com.wlrudxo.usagecache.sdPlugin';
+mkdirSync(`${destination}/ui`, { recursive: true });
+for (const name of ['imgs', 'layouts', 'manifest.json']) {
+    cpSync(`${source}/${name}`, `${destination}/${name}`, { recursive: true });
+}
+cpSync(`${source}/settings.html`, `${destination}/ui/settings.html`);

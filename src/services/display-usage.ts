@@ -1,10 +1,23 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import type { StandardUsageResult } from '@lenadweb/ai-limits';
+interface CachedBucket {
+    usagePercent: number;
+    resetTime: string;
+    scope?: { model: string };
+    displayName?: string;
+    windowSeconds?: number;
+}
+interface CachedUsage {
+    provider: 'claude' | 'antigravity' | 'chatgpt';
+    perModel: Record<string, CachedBucket>;
+    overallUsagePercent: number | null;
+    overallResetTime: string | null;
+    error: { code: 'CONN'; message: string } | null;
+}
 
 // Read the existing collector only. Never retry a provider API from a tile.
-export function displayUsage(provider: 'claude' | 'antigravity' | 'chatgpt', root = join(process.env.LOCALAPPDATA || '', 'usage_budget'), now = Date.now()): StandardUsageResult {
-    const perModel: Record<string, any> = {};
+export function displayUsage(provider: 'claude' | 'antigravity' | 'chatgpt', root = join(process.env.LOCALAPPDATA || '', 'usage_budget'), now = Date.now()): CachedUsage {
+    const perModel: Record<string, CachedBucket> = {};
     const valid = (used: unknown, at: string, reset: string) => typeof used === 'number' && Number.isFinite(used) && used >= 0 && used <= 100 && now - Date.parse(at) >= 0 && now - Date.parse(at) <= 180000 && Date.parse(reset) > now;
     try {
         if (provider === 'claude') {
@@ -26,5 +39,5 @@ export function displayUsage(provider: 'claude' | 'antigravity' | 'chatgpt', roo
         }
     } catch { /* Files can be absent at boot; do not expose file contents. */ }
     const first = Object.values(perModel)[0];
-    return { provider, perModel, overallUsagePercent: first?.usagePercent ?? null, overallResetTime: first?.resetTime ?? null, error: first ? null : { code: 'CONN', message: 'Cache stale' } } as StandardUsageResult;
+    return { provider, perModel, overallUsagePercent: first?.usagePercent ?? null, overallResetTime: first?.resetTime ?? null, error: first ? null : { code: 'CONN', message: 'Cache stale' } };
 }
