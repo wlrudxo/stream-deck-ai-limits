@@ -18,7 +18,7 @@ interface CachedUsage {
 // Read the existing collector only. Never retry a provider API from a tile.
 export function displayUsage(provider: 'claude' | 'antigravity' | 'chatgpt', root = join(process.env.LOCALAPPDATA || '', 'usage_budget'), now = Date.now()): CachedUsage {
     const perModel: Record<string, CachedBucket> = {};
-    const valid = (used: unknown, at: string, reset: string) => typeof used === 'number' && Number.isFinite(used) && used >= 0 && used <= 100 && now - Date.parse(at) >= 0 && now - Date.parse(at) <= 180000 && Date.parse(reset) > now;
+    const valid = (used: unknown, at: string, reset: string) => typeof used === 'number' && Number.isFinite(used) && used >= 0 && used <= 100 && now - Date.parse(at) >= 0 && now - Date.parse(at) <= 600000 && Date.parse(reset) > now;
     try {
         if (provider === 'claude') {
             const data = JSON.parse(readFileSync(join(root, 'display_claude.json'), 'utf8'));

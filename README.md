@@ -22,7 +22,7 @@ Node.js 24에서 `npm ci`, `npm test`, `npm run pack:cache` 순서로 실행한�
 
 같은 폴더의 `samples.jsonl`에서 Argon과 GPT 주간 값을 읽는다. 압축 표본은 마지막 관측 시각 `until`을 사용한다. Argon의 두 표시 ID를 지원한다. 캐시에 없는 GPT credit, GPT 5시간, 다른 Antigravity 모델은 `no data`다.
 
-1분마다 읽으며 관측이 3분 초과하거나 리셋 만료 또는 파일 부재이면 `Cache stale`을 표시한다. 없는 지표를 0%로 만들지 않는다. 로그의 `sent cached display`는 SDK 전송 기록이다.
+1분마다 읽으며 관측이 10분 초과하거나 리셋 만료 또는 파일 부재이면 `Cache stale`을 표시한다. 없는 지표를 0%로 만들지 않는다. 로그의 `sent cached display`는 SDK 전송 기록이다.
 
 ## 유지 결정과 출처
 
