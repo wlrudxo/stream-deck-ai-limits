@@ -10,7 +10,9 @@
       "unlink": "streamdeck unlink com.len.limits",
       "watch": "rollup -c -w --watch.onEnd=\"streamdeck restart com.len.limits\"",
       "version:bump": "node scripts/bump-version.mjs",
-      "release": "npm run version:bump && npm run build && streamdeck pack com.len.limits.sdPlugin --force --output ."
+      "release": "npm run version:bump && npm run build && streamdeck pack com.len.limits.sdPlugin --force --output .",
+      "build:cache": "node scripts/prepare-cache.mjs && rollup -c rollup.cache.mjs",
+      "pack:cache": "npm run build:cache && streamdeck pack com.wlrudxo.usagecache.sdPlugin --output dist --force --no-update-check"
    },
    "repository": {
       "type": "git",

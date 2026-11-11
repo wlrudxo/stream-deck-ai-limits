@@ -1,0 +1,13 @@
+import { WebSocketServer } from 'ws';
+import { spawn } from 'node:child_process';
+const server=new WebSocketServer({port:0,host:'127.0.0.1'});
+await new Promise(resolve=>server.on('listening',resolve));
+const port=server.address().port;
+const child=spawn(process.execPath,['bin/plugin.js','-port',String(port),'-pluginUUID','test-cache','-registerEvent','registerPlugin','-info',JSON.stringify({application:{platform:'windows',language:'en',version:'7.5.1'},devices:[{id:'test',name:'Test Deck',type:0,size:{columns:5,rows:3}}],plugin:{uuid:'com.wlrudxo.usagecache',version:'1.0.0.0'}})],{cwd:'com.wlrudxo.usagecache.sdPlugin',windowsHide:true,stdio:['ignore','pipe','pipe']});
+let sent=0;const values=new Set();let failure='';child.stderr.on('data',d=>{failure+=d.toString().slice(0,400)});
+server.on('connection',ws=>ws.on('message',raw=>{const msg=JSON.parse(raw);if(msg.event==='registerPlugin')for(const [suffix,metric] of [['progress','7d_fable_quota'],['antigravity','argon-weekly'],['codex.progress','weekly']])ws.send(JSON.stringify({event:'willAppear',action:'com.wlrudxo.usagecache.'+suffix,context:suffix,device:'test',payload:{controller:'Keypad',settings:{layout:'ring',metric,model:metric}}}));if(msg.event==='setImage'){sent++;const svg=Buffer.from(msg.payload.image.split(',')[1],'base64').toString();values.add(msg.context+':'+(svg.match(/\d+%/g)||[]).join(','));}}));
+await new Promise(resolve=>setTimeout(resolve,65000));
+const alive=child.exitCode===null;
+child.kill();for(const client of server.clients)client.close();server.close();
+console.log(JSON.stringify({alive,sent,values:[...values],failure}));
+if(!alive||sent<6)process.exitCode=1;

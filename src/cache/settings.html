@@ -1,0 +1,9 @@
+<!doctype html><html lang="ko"><meta charset="utf-8"><style>body{background:#292929;color:white;font:13px sans-serif}label{display:block;margin:12px}select{margin-left:8px}</style><body>
+<label>표시<select id="layout"><option value="ring">링</option><option value="bars">막대</option></select></label>
+<label>링 지표<select id="metric"></select></label><label>위 지표<select id="topMetric"></select></label><label>아래 지표<select id="bottomMetric"></select></label>
+<label>크기<select id="size"><option>default</option><option>compact</option><option>large</option><option>xlarge</option></select></label>
+<p>1분마다 기존 사용량 관측을 표시합니다. 3분 넘게 갱신되지 않으면 Cache stale로 표시합니다.</p>
+<script>
+let ws,context,settings={},argon=false;
+window.connectElgatoStreamDeckSocket=(port,uuid,event,info,actionInfo)=>{context=uuid;const a=JSON.parse(actionInfo);settings=a.payload.settings||{};argon=a.action.endsWith('antigravity');const options=argon?[['argon-weekly','Argon 주간']]:a.action.endsWith('codex.progress')?[['weekly','GPT 주간'],['none','없음']]:[['session','5시간'],['weekly','전체 주간'],['7d_fable_quota','Fable 주간']];for(const id of ['metric','topMetric','bottomMetric']){const el=document.getElementById(id);for(const [v,t] of options)el.add(new Option(t,v));}for(const el of document.querySelectorAll('select')){const key=argon?({metric:'model',topMetric:'topModel',bottomMetric:'bottomModel'}[el.id]||el.id):el.id;if(settings[key])el.value=settings[key];el.onchange=()=>{settings[key]=el.value;ws.send(JSON.stringify({event:'setSettings',context,payload:settings}));};}ws=new WebSocket('ws://127.0.0.1:'+port);ws.onopen=()=>ws.send(JSON.stringify({event,uuid}));};
+</script></body></html>

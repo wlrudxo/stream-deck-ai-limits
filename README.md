@@ -1,206 +1,31 @@
-<div align="center">
+# Paseo Usage Cache for Stream Deck
 
-<img src="generated/provider-assets/claude/base-144.svg" alt="AI Usage Limits" width="200" />
+자체 UUID `com.wlrudxo.usagecache`로 Claude, Fable, Argon, GPT의 기존 로컬 사용량 관측만 표시한다. Marketplace 계정, provider 인증, 외부 사용량 API, 개발 모드는 사용하지 않는다. Stream Deck SDK가 사용하는 로컬 WebSocket만 연결한다.
 
-# AI Usage Limits - Stream Deck Plugin
+## 설치와 기존 버튼 이전
 
-**See exactly how much of your AI coding quota is left, right on your Stream Deck keys and dials.**
+1. Stream Deck을 트레이 메뉴에서 완전히 종료한다.
+2. 이 repo의 `migrate-cache.cmd`를 한 번 실행한다. 기존 버튼 5개의 UUID만 바꾸고 링/막대, 지표, 크기 등 설정은 보존한다. 앱 실행 중에는 쓰기를 거부한다.
+3. `dist/com.wlrudxo.usagecache.streamDeckPlugin`을 열어 설치를 수락한다. 앱이 열리면 기존 위치의 버튼을 확인한다.
 
-Track usage limits and reset times for **Claude**, **Codex**, **Antigravity**, **Gemini CLI**, **MiniMax**, **OpenRouter**, or any provider configured in **CodexBar** — at a glance, without opening a terminal or a billing page.
+이전 스크립트는 변경할 프로필 원본과 기존 Marketplace 플러그인 폴더를 `backups/migration-<시각>/`에 보관한다. 알 수 없는 기존 액션이 있으면 변경 전 중단한다. 기본 확인만 하려면 `scripts/migrate-cache.py`를 `--apply` 없이 실행한다. 앱이 다시 열린 상태에서 프로필을 수정하지 않는다.
 
-[![Download on Elgato Marketplace](https://img.shields.io/badge/Elgato%20Marketplace-Download-2c2c2e?style=for-the-badge&logo=elgato&logoColor=white)](https://marketplace.elgato.com/product/ai-usage-limits-b78ef6c4-0165-4bf2-8ba8-889f723e915f)
+복원은 앱을 종료한 상태에서 해당 백업의 ProfilesV3 파일들을 원 위치에 덮어쓰고 백업의 com.len.limits.sdPlugin을 Plugins에 되돌린다. 새 플러그인은 앱에서 제거할 수 있다. 실제 사용 중 수정된 프로필이 있으면 복원 전에 별도 보관한다.
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Platform](https://img.shields.io/badge/platform-macOS%2012%2B%20%7C%20Windows%2010%2B-black.svg)](#requirements)
-[![Stream Deck](https://img.shields.io/badge/Stream%20Deck-6.9%2B-1c1c1e.svg)](https://www.elgato.com/stream-deck)
-[![Built with TypeScript](https://img.shields.io/badge/built%20with-TypeScript-3178c6.svg)](https://www.typescriptlang.org/)
-[![Keys & Dials](https://img.shields.io/badge/supports-Keys%20%26%20Dials-d97757.svg)](#actions)
+## 빌드와 배포
 
-</div>
+`npm run pack:cache`는 독립 소스 `src/cache/`, 기존 렌더러와 아이콘을 빌드하고 공식 CLI로 일반 설치 패키지를 만든다. 산출물은 repo 안의 `com.wlrudxo.usagecache.sdPlugin/`와 `dist/`에만 둔다. 설치본 직접 수정, link, restart 딥링크, Marketplace UUID 재사용을 하지 않는다.
 
----
+공식 배포 근거: [Elgato Distribution](https://docs.elgato.com/streamdeck/sdk/introduction/distribution/)은 패키지의 직접 사용자 배포를 지원한다. DRM은 Maker Console 처리 이후 적용된다. 로컬 제작 패키지는 Marketplace 등록 없이 배포한다.
 
-## Why you'll like it
+## 캐시 계약
 
-- **Native providers plus CodexBar:** use focused native actions for Claude, Codex, Antigravity, Gemini CLI, MiniMax and OpenRouter; the optional CodexBar backend covers its configured providers from one action.
-- **Keys *and* dials:** every action renders on standard keys **and** on Stream Deck+ encoders with a full dial layout.
-- **Live progress bars:** color-coded usage (green, amber, red) plus human-friendly reset countdowns like `3h 33m` or `4d 3h`.
-- **Zero key juggling for most providers:** reuses the credentials your existing CLIs already created locally. Only MiniMax and OpenRouter need a key pasted in.
-- **Always fresh:** usage is polled and cached automatically, so the keys stay current without hammering provider APIs.
-- **Powered by a typed SDK:** all the provider logic lives in the reusable [`@lenadweb/ai-limits`](https://github.com/lenadweb/ai-limits) library.
+- `%LOCALAPPDATA%/usage_budget/display_claude.json`: five_hour, weekly, weekly_model_fable을 구분한다.
+- 같은 폴더 `samples.jsonl`: Argon과 GPT 주간 값. 압축 이력의 마지막 관측은 until을 사용한다.
+- 1분마다 읽고 마지막 관측이 3분 초과, 리셋 만료, 파일 부재이면 Cache stale. 없는 지표를 0%로 만들지 않는다.
+- 캐시에 없는 GPT credit, GPT 5시간, 다른 Antigravity 모델은 no data다.
+- 로그의 `sent cached display`는 SDK로 이미지/피드백을 보냈다는 뜻이며 물리 USB 화면 수신 확인은 아니다.
 
----
+검증: `npm test`, Python `scripts/test_migrate_cache.py`, `node scripts/verify-cache.mjs`. 마지막 명령은 65초 동안 격리된 로컬 시험 호스트로 실제 번들을 실행해 초기/주기 전송과 생존을 확인한다. Stream Deck 본체와 프로필은 조작하지 않는다.
 
-## Install
-
-### From the Elgato Marketplace (recommended)
-
-The easiest way, no build tools required:
-
-**[Get *AI Usage Limits* on the Elgato Marketplace](https://marketplace.elgato.com/product/ai-usage-limits-b78ef6c4-0165-4bf2-8ba8-889f723e915f)**
-
-Click **Download**, open the file, and Stream Deck installs the plugin automatically. Then find **AI Usage Limits** in the actions list and drag any provider onto a key or dial.
-
-### From source (for development)
-
-```bash
-# 1. Install dependencies
-npm install
-
-# 2. Build the plugin
-npm run build
-
-# 3. Develop with live reload (auto-restarts the plugin in Stream Deck)
-npm run watch
-```
-
-Then open the **Stream Deck** app, find **AI Usage Limits** in the actions list, and drag any provider onto a key or dial.
-
----
-
-## Requirements
-
-| Requirement | Version |
-|---|---|
-| **Stream Deck application** | 6.9 or newer |
-| **Operating system** | macOS 12 (Monterey) or newer, or Windows 10 or newer |
-| **Node.js** | 20 or newer |
-| **Elgato CLI** (`@elgato/cli`) | installed as a dev dependency |
-
-> The plugin runs on both **macOS** and **Windows**. On macOS, Claude credentials are read from the Keychain; on Windows and Linux they are read from the credential file written by the matching CLI (see [Provider setup](#provider-setup)).
-
----
-
-## Actions
-
-Each provider is a separate action. All of them work on **Keypad** (keys) and **Encoder** (Stream Deck+ dials).
-
-| Action | What it shows | UUID |
-|---|---|---|
-| **Claude (Native)** | Claude Code session, weekly, Sonnet weekly, or a model-scoped weekly limit | `com.len.limits.progress` |
-| **Codex (Native)** | Codex session or weekly usage, usage limit resets, credits balance | `com.len.limits.codex.progress` |
-| **Antigravity (Native)** | Antigravity (Claude + Gemini) usage, per model | `com.len.limits.antigravity` |
-| **Gemini CLI (Native)** | Gemini CLI quota usage, per model | `com.len.limits.gemini-cli` |
-| **MiniMax (Native)** | MiniMax M-series daily or weekly usage | `com.len.limits.minimax` |
-| **OpenRouter (Native)** | OpenRouter key spend limit & spend by day/week/month | `com.len.limits.openrouter` |
-| **CodexBar backend** | Any enabled CodexBar provider, account and quota window | `com.len.limits.codexbar` |
-
-### One metric per tile
-
-Every action has a **Layout** setting:
-
-- **Bars** (default) — the two-slot view, now with a metric picker for each slot.
-- **Ring** — one large ring gauge showing a single metric, with its reset countdown in the middle.
-
-Place the same action more than once to build a row of tiles, e.g. Claude Session, Claude Week, Codex Session and Codex Week side by side. Each tile keeps its own metric, and all tiles of a provider share a single API call, so extra tiles cost nothing. MiniMax and OpenRouter tiles carry their own API key, so they are fetched once per distinct key — several tiles on the same key still cost one call, and tiles on different keys each show their own account.
-
-> **Claude note:** besides the session and weekly windows, Anthropic reports weekly limits scoped to a single model, such as Fable. The plugin lists whichever ones your account returns, so they appear in the metric picker as **Fable week (7d)** without any setup. Accounts without scoped limits keep exactly the metrics they had.
-
-> **Codex note:** OpenAI currently exposes only a weekly window on Plus, Pro and Business plans ([issue #6](https://github.com/lenadweb/stream-deck-ai-limits/issues/6)). The plugin classifies windows by the duration the API reports, so the weekly usage lands on the **Weekly limit** metric even when the API delivers it in the primary slot. A tile set to **Session limit** shows `no data` until OpenAI brings the 5-hour window back.
-
----
-
-## Provider setup
-
-For most providers the plugin simply reads the credentials your CLI already wrote to disk, no copy-pasting tokens.
-
-| Provider | How it authenticates | Where credentials come from |
-|---|---|---|
-| **Claude** | Automatic | macOS: Keychain (`Claude Code-credentials`), falling back to `~/.claude/.credentials.json`. Windows: `%USERPROFILE%\.claude\.credentials.json` |
-| **Codex / ChatGPT** | Automatic | `~/.codex/auth.json` |
-| **Gemini CLI** | Automatic | `~/.gemini/oauth_creds.json` |
-| **Antigravity** | One-time login | Click **Login** in the Property Inspector to start the Google OAuth2 flow; the token is saved to `~/.limits-streamdeck/antigravity_oauth.json` |
-| **MiniMax** | API key | Paste your key into the Property Inspector |
-| **OpenRouter** | API key | Paste a key from [openrouter.ai/keys](https://openrouter.ai/keys); pick what each bar shows (limit / spend by day, week, month, total) |
-| **CodexBar backend** | Local CodexBar server | Start `codexbar serve`; configured providers load automatically when opening this action's settings |
-
-> **Tip:** Make sure the matching CLI (Claude Code, Codex, Gemini CLI) is installed and logged in first; that is what creates the credential files the plugin reads.
-
----
-
-## CodexBar backend (optional)
-
-The **CodexBar backend** action reads the local [`codexbar serve`](https://github.com/steipete/CodexBar) JSON API. It is useful for providers that do not have a dedicated native action here, while native actions remain independent and continue to work without CodexBar.
-
-1. Install and configure CodexBar for the providers you use.
-2. Start the local server: `codexbar serve` (the default address is `127.0.0.1:8080`).
-3. Drag **CodexBar backend** onto a key or dial.
-4. Its settings automatically load enabled providers. Choose a provider, account, and one or two quota windows; use the refresh icon if you change your CodexBar configuration. A non-default local port can be set in **Advanced** before loading.
-
-The plugin connects only to `127.0.0.1`; it does not send CodexBar data or credentials to a remote host. CodexBar's desktop app and this backend action are macOS-oriented.
-
-In addition to quota windows, the action exposes CodexBar's provider details and other displayable payload values, including credits, pace, identity, and data confidence. For OpenRouter this includes credits, API-key budget and spend, and the reported rate limit; each can be selected as a ring or bar metric.
-
-In **Advanced**, you can start `codexbar serve`, see its status, and stop a server started by the current Stream Deck session. Server port and auto-start are shared by every CodexBar backend action, so multiple tiles use one server. You can also enable **Start CodexBar automatically if it isn't running**. This opt-in setting starts a locally installed CodexBar CLI only after the plugin cannot reach its configured loopback server.
-
----
-
-## How it looks
-
-Each provider renders on both keys and Stream Deck+ dials, with a brand‑matched theme and a rounded usage bar that shows the reset countdown inside it.
-
-<div align="center">
-
-<img src="generated/provider-assets/claude/key@2x.png" alt="Claude" width="120" />&nbsp;<img src="generated/provider-assets/codex/key@2x.png" alt="Codex" width="120" />&nbsp;<img src="generated/provider-assets/antigravity/key@2x.png" alt="Antigravity" width="120" />
-
-<img src="generated/provider-assets/gemini-cli/key@2x.png" alt="Gemini CLI" width="120" />&nbsp;<img src="generated/provider-assets/minimax/key@2x.png" alt="MiniMax" width="120" />&nbsp;<img src="generated/provider-assets/openrouter/key@2x.png" alt="OpenRouter" width="120" />
-
-<img src="generated/provider-assets/claude/dial@2x.png" alt="Claude dial" width="220" />&nbsp;<img src="generated/provider-assets/openrouter/dial@2x.png" alt="OpenRouter dial" width="220" />
-
-**[See the full gallery — keys & dials for every provider →](docs/showcase.md)**
-
-</div>
-
----
-
-## How it works
-
-<p align="center">
-  <img src="docs/architecture.svg" alt="AI Usage Limits architecture: Stream Deck keys and dials render normalized usage data from the plugin, @lenadweb/ai-limits, and provider credentials or APIs" width="100%">
-</p>
-
-The plugin is a thin rendering layer: it asks [`@lenadweb/ai-limits`](https://github.com/lenadweb/ai-limits) for a normalized usage summary per provider, then draws the progress bars and reset countdowns onto the key or dial.
-
----
-
-## Development scripts
-
-| Script | What it does |
-|---|---|
-| `npm run build` | Bundles the TypeScript into `com.len.limits.sdPlugin/bin/plugin.js` via Rollup. |
-| `npm run watch` | Rebuilds on save and restarts the plugin in Stream Deck (`streamdeck restart`). |
-| `npm run release` | Bumps the version, rebuilds, and packs a distributable `.streamDeckPlugin` file. |
-
----
-
-## Troubleshooting
-
-- **A provider shows no data:** confirm the matching CLI is installed and logged in, and that its credential file exists (see the table above).
-- **Antigravity stuck after login:** re-run **Login** from the Property Inspector; the token is cached at `~/.limits-streamdeck/antigravity_oauth.json`.
-- **MiniMax shows an error:** double-check the API key in the Property Inspector.
-- **Nothing appears after `npm run watch`:** make sure the Stream Deck app is running and on version 6.9+.
-
----
-
-## Support
-
-- **Marketplace listing:** [AI Usage Limits on Elgato Marketplace](https://marketplace.elgato.com/product/ai-usage-limits-b78ef6c4-0165-4bf2-8ba8-889f723e915f)
-- **Bugs & feature requests:** [GitHub issues](https://github.com/lenadweb/stream-deck-ai-limits/issues)
-
-## Contributing
-
-Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request, and file ideas or bugs in the [issue tracker](https://github.com/lenadweb/stream-deck-ai-limits/issues).
-
----
-
-## License
-
-[MIT](LICENSE) (c) [lenadweb](https://github.com/lenadweb)
-
-## 로컬 사용량 캐시 연결
-
-Claude와 Argon 버튼은 기존 UsageBudget_Alert가 남긴 `%LOCALAPPDATA%/usage_budget/display_claude.json`과 `samples.jsonl`을 1분마다 읽는다. 외부 API는 호출하지 않는다. Claude 전체 주간과 Fable 전용 주간을 구분하고 Argon의 `argon-weekly`, `gemini-argon-wtu-weekly`를 함께 지원한다. 마지막 관측이 3분을 넘거나 리셋이 지났으면 `Cache stale`을 표시한다. 다른 Antigravity 모델은 이 캐시에 없어 `no data`로 표시한다.
-
-유지 소스는 기존 fork `wlrudxo/stream-deck-ai-limits`, 변경 기준은 `9d8c145`다. 설치 폴더는 공식 `streamdeck link com.len.limits.sdPlugin`으로 이 repo에 연결했다. `npm run build` 후 Stream Deck에서 플러그인을 다시 로드한다. 개발 모드가 켜진 경우 `Streamdeck_manager/deploy_limits_cache.py`가 공식 restart 명령만 실행한다. 개발 모드가 꺼져 있으면 사용자에게 본체 재시작을 요청하고 종료 코드 2로 끝난다. 자동으로 개발 모드를 켜거나 본체를 재시작하지 않는다.
-
-Marketplace 배포본 직접 수정은 서명 검사로 차단되므로 사용하지 않는다. Marketplace 재설치로 연결이 바뀌어도 fork 소스는 보존된다. 업데이트 뒤에는 연결과 호환성을 확인한다. 자동 갱신 감시나 예약은 추가하지 않는다.
+출처: [lenadweb/stream-deck-ai-limits](https://github.com/lenadweb/stream-deck-ai-limits), 기존 fork 기준 `594338b`(그 전 관리 기준 `9d8c145`). MIT 라이선스와 원 저작권은 LICENSE에 유지한다. 기존 upstream 소스는 참고용이고 독립 패키지 진입점은 `src/cache/plugin.ts`다.

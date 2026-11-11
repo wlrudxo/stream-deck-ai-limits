@@ -3,7 +3,7 @@ import { join } from 'node:path';
 import type { StandardUsageResult } from '@lenadweb/ai-limits';
 
 // Read the existing collector only. Never retry a provider API from a tile.
-export function displayUsage(provider: 'claude' | 'antigravity', root = join(process.env.LOCALAPPDATA || '', 'usage_budget'), now = Date.now()): StandardUsageResult {
+export function displayUsage(provider: 'claude' | 'antigravity' | 'chatgpt', root = join(process.env.LOCALAPPDATA || '', 'usage_budget'), now = Date.now()): StandardUsageResult {
     const perModel: Record<string, any> = {};
     const valid = (used: unknown, at: string, reset: string) => typeof used === 'number' && Number.isFinite(used) && used >= 0 && used <= 100 && now - Date.parse(at) >= 0 && now - Date.parse(at) <= 180000 && Date.parse(reset) > now;
     try {
@@ -17,11 +17,11 @@ export function displayUsage(provider: 'claude' | 'antigravity', root = join(pro
             }
         } else {
             const rows = readFileSync(join(root, 'samples.jsonl'), 'utf8').trim().split(/\r?\n/).map(line => JSON.parse(line));
-            const row = rows.filter(r => r.provider === 'argon').sort((a,b) => Date.parse(b.until || b.at) - Date.parse(a.until || a.at))[0];
+            const row = rows.filter(r => r.provider === (provider === 'chatgpt' ? 'gpt' : 'argon')).sort((a,b) => Date.parse(b.until || b.at) - Date.parse(a.until || a.at))[0];
             if (row && valid(row.used, row.until || row.at, row.reset)) {
                 const bucket = { usagePercent: row.used, resetTime: row.reset, displayName: 'Argon wk' };
-                perModel['argon-weekly'] = bucket;
-                perModel['gemini-argon-wtu-weekly'] = bucket;
+                if (provider === 'chatgpt') perModel['primary_window'] = {...bucket, displayName:'GPT Week', windowSeconds:604800};
+                else { perModel['argon-weekly'] = bucket; perModel['gemini-argon-wtu-weekly'] = bucket; }
             }
         }
     } catch { /* Files can be absent at boot; do not expose file contents. */ }

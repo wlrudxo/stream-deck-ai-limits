@@ -11,3 +11,8 @@ tmp/
 .vscode/
 .agents/
 .preview/
+
+com.wlrudxo.usagecache.sdPlugin/
+dist/
+backups/
+logs/

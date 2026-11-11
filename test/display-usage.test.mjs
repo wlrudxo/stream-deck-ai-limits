@@ -11,3 +11,6 @@ const path = (await import('node:url')).fileURLToPath(root);
 test('preserves separate Fable and total buckets, including zero',()=> {const r=displayUsage('claude',path,now); assert.equal(r.perModel.seven_day.usagePercent,67); assert.equal(r.perModel['7d_fable_quota'].usagePercent,60); assert.equal(r.perModel.five_hour.usagePercent,0);});
 test('accepts compressed sample until and both Argon IDs',()=>{const r=displayUsage('antigravity',path,now); assert.equal(r.perModel['argon-weekly'].usagePercent,19); assert.equal(r.perModel['gemini-argon-wtu-weekly'].usagePercent,19);});
 test('stale, expired, missing cache fails closed',()=>{assert.ok(displayUsage('claude',path,now+240000).error); assert.ok(displayUsage('antigravity',path,now+86400000).error); assert.ok(displayUsage('claude',path+'missing',now).error);});
+import { appendFileSync } from 'node:fs';
+appendFileSync(new URL('samples.jsonl', root), '\n'+JSON.stringify({provider:'gpt',used:71,at,reset}));
+test('GPT is read from the weekly cache without invented short windows',()=>{const r=displayUsage('chatgpt',path,now);assert.equal(r.perModel.primary_window.usagePercent,71);assert.equal(r.perModel.primary_window.windowSeconds,604800);assert.equal(r.perModel.secondary_window,undefined);});
