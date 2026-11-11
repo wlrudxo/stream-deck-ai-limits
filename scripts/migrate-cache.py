@@ -14,8 +14,9 @@ MAPPING = {OLD + suffix: NEW + suffix for suffix in ('.progress', '.antigravity'
 
 def running():
     import subprocess
-    result = subprocess.run(['tasklist.exe', '/FI', 'IMAGENAME eq StreamDeck.exe', '/FO', 'CSV', '/NH'], capture_output=True, text=True, creationflags=subprocess.CREATE_NO_WINDOW, check=True)
-    return 'streamdeck.exe' in result.stdout.lower()
+    result = subprocess.run(['tasklist.exe', '/FI', 'IMAGENAME eq StreamDeck.exe', '/FO', 'CSV', '/NH'], capture_output=True, creationflags=subprocess.CREATE_NO_WINDOW, check=True)
+    # tasklist prints its "no matching task" line in the console code page; compare bytes, the image name is ASCII.
+    return b'streamdeck.exe' in result.stdout.lower()
 
 
 def convert(value):
