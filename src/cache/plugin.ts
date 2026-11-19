@@ -34,7 +34,7 @@ class CacheAction extends SingletonAction<Record<string, any>> {
             const slot = (metric: string): Slot => {
                 const key = this.provider === 'claude' ? ({session:'five_hour',weekly:'seven_day',weeklySonnet:'7d_sonnet_quota'} as any)[metric] ?? metric : this.provider === 'chatgpt' ? (metric === 'weekly' ? 'primary_window' : metric) : metric;
                 const bucket = result.perModel?.[key];
-                const label = ({five_hour:'Session',seven_day:'Week','7d_fable_quota':'Fable','primary_window':'GPT Week','argon-weekly':'Argon','gemini-argon-wtu-weekly':'Argon'} as any)[key] ?? metric;
+                const label = ({five_hour:'Session',seven_day:'Week','7d_fable_quota':'Fable','primary_window':'GPT Week','argon-weekly':'Gemini','gemini-argon-wtu-weekly':'Gemini'} as any)[key] ?? metric;
                 return bucket ? {kind:'gauge',label,percent:bucket.usagePercent ?? 0,caption:bucket.resetTime ? formatTimeUntil(bucket.resetTime) : undefined} : {kind:'stat',label,valueText:'—',caption:'no data',muted:true};
             };
             const defaults = this.provider === 'antigravity' ? ['argon-weekly','argon-weekly'] : this.provider === 'chatgpt' ? ['weekly','none'] : ['session','weekly'];

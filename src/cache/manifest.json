@@ -56,7 +56,7 @@
       ]
     },
     {
-      "Name": "Argon Cache",
+      "Name": "Gemini Cache",
       "UUID": "com.wlrudxo.usagecache.antigravity",
       "Icon": "imgs/actions/counter/icon",
       "Tooltip": "Local usage cache",
@@ -85,7 +85,7 @@
   "Category": "Paseo Usage Cache",
   "CategoryIcon": "imgs/plugin/category-icon",
   "CodePath": "bin/plugin.js",
-  "Description": "Local cached Claude, Argon and GPT usage. No provider API calls.",
+  "Description": "Local cached Claude, Gemini and GPT usage. No provider API calls.",
   "Icon": "imgs/plugin/plugin-icon",
   "SDKVersion": 3,
   "Software": {
